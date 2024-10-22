@@ -2,27 +2,22 @@ import java.io.*;
 import java.util.StringTokenizer;
 
 public class NHLStats {
-    // LinkedList of PlayerRecord objects
     private LinkedList<PlayerRecord> players;
 
-    // Constructor to create an empty list
     public NHLStats() {
         players = new LinkedList<>();
     }
 
-    // Method to add a PlayerRecord to the list
     public void add(PlayerRecord player) {
         players.add(player);
     }
 
-    // Method to read player records from a file
     public void readFromFile(String filename) throws IOException {
         File file = new File(filename);
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line;
 
         while ((line = reader.readLine()) != null) {
-            // Tokenize the line based on tab delimiter
             StringTokenizer token = new StringTokenizer(line, "\t");
             String name = token.nextToken();
             String position = token.nextToken();
@@ -34,7 +29,6 @@ public class NHLStats {
             int shotsOnGoal = Integer.parseInt(token.nextToken());
             int gameWinningGoals = Integer.parseInt(token.nextToken());
 
-            // Create a new PlayerRecord and add it to the list
             PlayerRecord player = new PlayerRecord(name, position, team, gamesPlayed, goals, assists, penaltyMinutes, shotsOnGoal, gameWinningGoals);
             add(player);
         }
@@ -42,21 +36,21 @@ public class NHLStats {
         reader.close();
     }
 
-
-    // Method to find the player(s) with the most points (goals + assists)
+    // Method to find players with the highest points (goals + assists)
     public String findPlayerWithMostPoints() {
         Node<PlayerRecord> current = players.getFront();
         int maxPoints = 0;
         StringBuilder result = new StringBuilder();
 
+        // Loop to find the highest points
         while (current != null) {
             PlayerRecord player = current.getData();
-            int playerPoints = player.getTotalPoints();
-            if (playerPoints > maxPoints) {
-                maxPoints = playerPoints;
-                result.setLength(0); // Clear previous results
+            int totalPoints = player.getTotalPoints();
+            if (totalPoints > maxPoints) {
+                maxPoints = totalPoints;
+                result.setLength(0); // Reset result
                 result.append(player.getName()).append(" (").append(player.getTeam()).append(")\n");
-            } else if (playerPoints == maxPoints) {
+            } else if (totalPoints == maxPoints) {
                 result.append(player.getName()).append(" (").append(player.getTeam()).append(")\n");
             }
             current = current.getNext();
@@ -65,18 +59,19 @@ public class NHLStats {
         return result.toString();
     }
 
-    // Method to find the player(s) with the most penalty minutes (Most Aggressive)
+    // Method to find the most aggressive player (highest penalty minutes)
     public String findMostAggressivePlayer() {
         Node<PlayerRecord> current = players.getFront();
         int maxPenaltyMinutes = 0;
         StringBuilder result = new StringBuilder();
 
+        // Loop to find the player(s) with the most penalty minutes
         while (current != null) {
             PlayerRecord player = current.getData();
             int penaltyMinutes = player.getPenaltyMinutes();
             if (penaltyMinutes > maxPenaltyMinutes) {
                 maxPenaltyMinutes = penaltyMinutes;
-                result.setLength(0); // Clear previous results
+                result.setLength(0); // Reset result
                 result.append(player.getName()).append(" (").append(player.getTeam()).append(", ").append(player.getPosition()).append(")\n");
             } else if (penaltyMinutes == maxPenaltyMinutes) {
                 result.append(player.getName()).append(" (").append(player.getTeam()).append(", ").append(player.getPosition()).append(")\n");
@@ -87,21 +82,19 @@ public class NHLStats {
         return result.toString();
     }
 
-
-
-
-    // Method to find the player(s) with the most game-winning goals (MVP)
+    // Method to find the MVP (player with the most game-winning goals)
     public String findMVP() {
         Node<PlayerRecord> current = players.getFront();
         int maxGameWinningGoals = 0;
         StringBuilder result = new StringBuilder();
 
+        // Loop to find the player(s) with the most game-winning goals
         while (current != null) {
             PlayerRecord player = current.getData();
             int gameWinningGoals = player.getGameWinningGoals();
             if (gameWinningGoals > maxGameWinningGoals) {
                 maxGameWinningGoals = gameWinningGoals;
-                result.setLength(0); // Clear previous results
+                result.setLength(0); // Reset result
                 result.append(player.getName()).append(" (").append(player.getTeam()).append(")\n");
             } else if (gameWinningGoals == maxGameWinningGoals) {
                 result.append(player.getName()).append(" (").append(player.getTeam()).append(")\n");
@@ -112,18 +105,19 @@ public class NHLStats {
         return result.toString();
     }
 
-    // Method to find the player(s) with the most shots on goal (Most Promising)
+    // Method to find the most promising player (player with the most shots on goal)
     public String findMostPromisingPlayer() {
         Node<PlayerRecord> current = players.getFront();
         int maxShotsOnGoal = 0;
         StringBuilder result = new StringBuilder();
 
+        // Loop to find the player(s) with the most shots on goal
         while (current != null) {
             PlayerRecord player = current.getData();
             int shotsOnGoal = player.getShotsOnGoal();
             if (shotsOnGoal > maxShotsOnGoal) {
                 maxShotsOnGoal = shotsOnGoal;
-                result.setLength(0); // Clear previous results
+                result.setLength(0); // Reset result
                 result.append(player.getName()).append(" (").append(player.getTeam()).append(")\n");
             } else if (shotsOnGoal == maxShotsOnGoal) {
                 result.append(player.getName()).append(" (").append(player.getTeam()).append(")\n");
@@ -134,13 +128,13 @@ public class NHLStats {
         return result.toString();
     }
 
-    // Method to find the team(s) with the most penalty minutes using linked list
+    // Method to find the team with the most penalty minutes
     public String findTeamWithMostPenaltyMinutes() {
         LinkedList<String> teams = new LinkedList<>();
-        LinkedList<Integer> penalties = new LinkedList<>();
+        LinkedList<Integer> penaltyMinutesPerTeam = new LinkedList<>();
         Node<PlayerRecord> current = players.getFront();
 
-        // Calculate total penalty minutes per team
+        // Loop to calculate total penalty minutes for each team
         while (current != null) {
             PlayerRecord player = current.getData();
             String team = player.getTeam();
@@ -149,43 +143,24 @@ public class NHLStats {
             int index = findTeamIndex(teams, team);
             if (index == -1) {
                 teams.add(team);
-                penalties.add(penaltyMinutes);
+                penaltyMinutesPerTeam.add(penaltyMinutes);
             } else {
-                penalties.setAt(penalties.getAt(index) + penaltyMinutes, index);
+                penaltyMinutesPerTeam.setAt(penaltyMinutesPerTeam.getAt(index) + penaltyMinutes, index);
             }
+
             current = current.getNext();
         }
 
-        // Find team(s) with the most penalty minutes
-        int maxPenaltyMinutes = 0;
-        StringBuilder result = new StringBuilder();
-        Node<Integer> penaltyNode = penalties.getFront();
-        Node<String> teamNode = teams.getFront();
-
-        while (penaltyNode != null && teamNode != null) {
-            int penaltyMinutes = penaltyNode.getData();
-            String team = teamNode.getData();
-            if (penaltyMinutes > maxPenaltyMinutes) {
-                maxPenaltyMinutes = penaltyMinutes;
-                result.setLength(0); // Clear previous results
-                result.append(team).append("\n");
-            } else if (penaltyMinutes == maxPenaltyMinutes) {
-                result.append(team).append("\n");
-            }
-            penaltyNode = penaltyNode.getNext();
-            teamNode = teamNode.getNext();
-        }
-
-        return result.toString();
+        return getTeamWithMaxStat(teams, penaltyMinutesPerTeam);
     }
 
-    // Method to find the team(s) with the most game-winning goals using linked list
+    // Method to find the team with the most game-winning goals
     public String findTeamWithMostGameWinningGoals() {
         LinkedList<String> teams = new LinkedList<>();
-        LinkedList<Integer> goals = new LinkedList<>();
+        LinkedList<Integer> gameWinningGoalsPerTeam = new LinkedList<>();
         Node<PlayerRecord> current = players.getFront();
 
-        // Calculate total game-winning goals per team
+        // Loop to calculate total game-winning goals for each team
         while (current != null) {
             PlayerRecord player = current.getData();
             String team = player.getTeam();
@@ -194,37 +169,45 @@ public class NHLStats {
             int index = findTeamIndex(teams, team);
             if (index == -1) {
                 teams.add(team);
-                goals.add(gameWinningGoals);
+                gameWinningGoalsPerTeam.add(gameWinningGoals);
             } else {
-                goals.setAt(goals.getAt(index) + gameWinningGoals, index);
+                gameWinningGoalsPerTeam.setAt(gameWinningGoalsPerTeam.getAt(index) + gameWinningGoals, index);
             }
+
             current = current.getNext();
         }
 
-        // Find team(s) with the most game-winning goals
-        int maxGameWinningGoals = 0;
+        return getTeamWithMaxStat(teams, gameWinningGoalsPerTeam);
+    }
+
+    // Helper method to get the team with the maximum stat
+    private String getTeamWithMaxStat(LinkedList<String> teams, LinkedList<Integer> stats) {
+        int maxStat = 0;
         StringBuilder result = new StringBuilder();
-        Node<Integer> goalsNode = goals.getFront();
+
+        Node<Integer> statNode = stats.getFront();
         Node<String> teamNode = teams.getFront();
 
-        while (goalsNode != null && teamNode != null) {
-            int gameWinningGoals = goalsNode.getData();
-            String team = teamNode.getData();
-            if (gameWinningGoals > maxGameWinningGoals) {
-                maxGameWinningGoals = gameWinningGoals;
-                result.setLength(0); // Clear previous results
-                result.append(team).append("\n");
-            } else if (gameWinningGoals == maxGameWinningGoals) {
-                result.append(team).append("\n");
+        while (statNode != null && teamNode != null) {
+            int currentStat = statNode.getData();
+            String currentTeam = teamNode.getData();
+
+            if (currentStat > maxStat) {
+                maxStat = currentStat;
+                result.setLength(0); // Reset result
+                result.append(currentTeam).append("\n");
+            } else if (currentStat == maxStat) {
+                result.append(currentTeam).append("\n");
             }
-            goalsNode = goalsNode.getNext();
+
+            statNode = statNode.getNext();
             teamNode = teamNode.getNext();
         }
 
         return result.toString();
     }
 
-    // Helper method to find index of a team in the linked list
+    // Helper method to find the index of a team in the list
     private int findTeamIndex(LinkedList<String> teams, String team) {
         Node<String> current = teams.getFront();
         int index = 0;

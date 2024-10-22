@@ -71,24 +71,6 @@ public class PlayerRecord {
         return goals + assists;
     }
 
-    // Override toString method for formatted output
-    @Override
-    public String toString() {
-        return "Name: " + name + ", Position: " + position + ", Team: " + team +
-                ", Games Played: " + numberFormat.format(gamesPlayed) +
-                ", Goals: " + numberFormat.format(goals) +
-                ", Assists: " + numberFormat.format(assists) +
-                ", Penalty Minutes: " + numberFormat.format(penaltyMinutes) +
-                ", Shots on Goal: " + numberFormat.format(shotsOnGoal) +
-                ", Game Winning Goals: " + numberFormat.format(gameWinningGoals);
-    }
 
-    // Equals method to compare player records
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        PlayerRecord other = (PlayerRecord) obj;
-        return name.equals(other.name) && position.equals(other.position) && team.equals(other.team);
-    }
+
 }
